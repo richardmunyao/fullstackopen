@@ -8,35 +8,31 @@ const App = () => {
     { name: 'Dan Abramov', number: '12-43-234345', id: 3 },
     { name: 'Mary Poppendieck', number: '39-23-6423122', id: 4 }
   ])
-  const [newName, setNewName] = useState('blah')
-  const [newNumber, setNewNumber] = useState('77-88-99')
+  const [newName, setNewName] = useState('Sherlock Holmes')
+  const [newNumber, setNewNumber] = useState('89-23-6423999')
   const [searchInpt, setNewSearchInpt] = useState('')
   
   
+  //event handlers
   const addName = (event) => {
-    event.preventDefault()
-    console.log("clicked on button")
+    event.preventDefault()    
     
     const alreadyExists = (persons.find(personX => personX.name === newName))
     if (alreadyExists){
       alert(`${newName} is already added to the phonebook `)
 
     } else {
-      const newPersonObj = {
-        name: newName,
-        number: newNumber,
-        id: persons.length + 1
+        const newPersonObj = {
+          name: newName,
+          number: newNumber,
+          id: persons.length + 1
+        }
+        setPersons(persons.concat(newPersonObj))
+        setNewName('')
+        setNewNumber('')
       }
-      setPersons(persons.concat(newPersonObj))
-      setNewName('')
-      setNewNumber('')
     }
-
-    }
-
-        
-   
-
+    
   const handleNameChange = (event) => {
     setNewName(event.target.value)
   }
@@ -46,50 +42,71 @@ const App = () => {
   }
 
   const handleSearchInpt = (event) => {
-    const query = event.target.value
-    // console.log(query)
+    const query = event.target.value    
     setNewSearchInpt(event.target.value)    
   }
-
-  
-  const filteredResults = persons.filter(somePerson => 
-      somePerson.name.toLowerCase().includes(searchInpt.toLowerCase()))
-    
-      
-  
 
   return(
     <div>
       <h2>Phonebook</h2>
-      <div>
-        filter shown with: <input
-        value={searchInpt}
-        onChange={handleSearchInpt} />
-      </div>
-      <div>
-        <h2>Add a New</h2>
-      </div>
-      <form>
-        <div>
-          name: <input 
-          value={newName}
-          onChange = {handleNameChange}/>          
-        </div>
-        <div>
-          number: <input
-          value={newNumber}
-          onChange = {handleNumberChange} />
-        </div>
-        <div>
-          <button type='submit' 
-          onClick={addName}>add</button>
-        </div>
-      </form>
-      <h2>Numbers</h2>
-      {filteredResults.map(person =>
-        <p key={person.id}>{person.name}:  {person.number}</p>)}
+
+      <Filter inpt = {searchInpt} handler={handleSearchInpt}/>
+
+      <h3>Add A new</h3>
+
+      <PersonForm nameInpt={newName} numberInpt={newNumber} nameHandler ={handleNameChange} numberHandler={handleNumberChange} addHandler={addName}/>
+
+      <h3>Numbers</h3>
+
+      <Persons persons={persons} inpt={searchInpt}/>
+      
     </div>
   )
 
 }
+
+//components
+const Filter = ({inpt, handler}) => {
+  
+  return (
+    <div>
+        filter shown with: <input
+        value={inpt}
+        onChange={handler} />
+      </div>
+  )
+}
+
+const PersonForm = ({nameInpt, numberInpt, nameHandler, numberHandler, addHandler }) => {
+  return (
+    <form>
+        <div>
+          name: <input 
+          value={nameInpt}
+          onChange = {nameHandler}/>          
+        </div>
+        <div>
+          number: <input
+          value={numberInpt}
+          onChange = {numberHandler} />
+        </div>
+        <div>
+          <button type='submit' 
+          onClick={addHandler}>add</button>
+        </div>        
+      </form>
+  )
+}
+
+const Persons = ({persons, inpt}) => {
+  const filteredResults = persons.filter(somePerson => 
+    somePerson.name.toLowerCase().includes(inpt.toLowerCase()))   
+
+  return (filteredResults.map(person =>
+    <p key={person.id}>{person.name}: {person.number}</p>
+  )
+  )
+  
+}
+
 export default App;
