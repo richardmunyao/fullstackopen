@@ -41,8 +41,7 @@ const App = () => {
     setNewNumber(event.target.value)
   }
 
-  const handleSearchInpt = (event) => {
-    const query = event.target.value    
+  const handleSearchInpt = (event) => {       
     setNewSearchInpt(event.target.value)    
   }
 
