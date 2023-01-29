@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from 'axios'
+import phonebook from "./components/phonebook";
 
 const App = () => {
 
@@ -8,14 +9,14 @@ const App = () => {
   const [newNumber, setNewNumber] = useState('89-23-6423999')
   const [searchInpt, setNewSearchInpt] = useState('')
   
-  //effect hook
+  //effect hook to update component with persons
   useEffect( () => {
-    axios
-      .get('http://localhost:3001/persons')
-      .then( response => {
-        console.log(response)
-        setPersons(response.data)
-      })
+    // fetch data from backed server
+    phonebook
+      .getAll()
+      .then(returnedPersons => {
+        setPersons(returnedPersons)
+      })    
   },[])
 
   
@@ -32,12 +33,11 @@ const App = () => {
           name: newName,
           number: newNumber,          
         }
-        // setPersons(persons.concat(newPersonObj))
-        const url = ('http://localhost:3001/persons')
-        axios
-          .post(url, newPersonObj)
-          .then(response => {
-            setPersons(persons.concat(response.data))
+        // use our phonebook module to save person to backend server        
+        phonebook
+          .create(newPersonObj)
+          .then(returnedPerson => {
+            setPersons(persons.concat(returnedPerson))
           })
         setNewName('')
         setNewNumber('')

@@ -24,6 +24,16 @@
       "name": "Sherlock Holmes",
       "number": "89-23-6423999",
       "id": 5
+    },
+    {
+      "name": "Marshall Mathers",
+      "number": "77-3132-54-46",
+      "id": 6
+    },
+    {
+      "name": "Snoop Dogg",
+      "number": "879-88-36564-646",
+      "id": 7
     }
   ]
 }
