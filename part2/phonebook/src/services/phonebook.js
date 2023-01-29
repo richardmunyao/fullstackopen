@@ -6,7 +6,7 @@ const baseUrl = 'http://localhost:3001/persons/'
 
 const create = (newPersonObj) => {
     const request = axios.post(baseUrl, newPersonObj)
-    return request.then(response => response.data)    
+    return request.then(response => response.data)
 }
 
 const getAll = () => {
@@ -14,11 +14,18 @@ const getAll = () => {
     return request.then(response => response.data)
 }
 
-const removePerson = (personId) => { 
-    const request = axios.delete(baseUrl+personId)
-    return request.then( response => response)
+const removePerson = (personId) => {
+    const request = axios.delete(`${baseUrl}/${personId}`)
+    return request.then(response => response)
+}
+
+const changeNumber = (personId, newPersonObj) => {
+    const request = axios.put(`${baseUrl}/${personId}`, newPersonObj)
+    return request.then(response => response.data)
+
 }
 
 
 
-export default {create, getAll, removePerson}
+const ops = { create, getAll, removePerson, changeNumber }
+export default ops
