@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from 'axios'
-import phonebook from "./components/phonebook";
+import phonebook from "./services/phonebook";
 
 const App = () => {
 
@@ -10,14 +10,14 @@ const App = () => {
   const [searchInpt, setNewSearchInpt] = useState('')
   
   //effect hook to update component with persons
-  useEffect( () => {
-    // fetch data from backed server
+  const hook = () => {
     phonebook
       .getAll()
       .then(returnedPersons => {
         setPersons(returnedPersons)
-      })    
-  },[])
+      })
+  }
+  useEffect( hook, [] )
 
   
   //event handlers
@@ -43,6 +43,25 @@ const App = () => {
         setNewNumber('')
       }
     }
+
+  //delete button event listener
+  const handledeletePerson = (event, name) => {   
+
+    if ( window.confirm (`Delete ${name} ?`)){           
+      phonebook
+      .removePerson(event.target.id)
+      .then(response => {
+        //optional: check if response.status===200
+        if(response.status === 200){
+          //update state from db:
+          hook()
+        }
+        
+    })  
+
+    }
+      
+  }
     
   const handleNameChange = (event) => {
     setNewName(event.target.value)
@@ -68,7 +87,7 @@ const App = () => {
 
       <h3>Numbers</h3>
 
-      <Persons persons={persons} inpt={searchInpt}/>
+      <Persons persons={persons} inpt={searchInpt} deletePerson={handledeletePerson}/>
       
     </div>
   )
@@ -108,12 +127,14 @@ const PersonForm = ({nameInpt, numberInpt, nameHandler, numberHandler, addHandle
   )
 }
 
-const Persons = ({persons, inpt}) => {
+const Persons = ({persons, inpt, deletePerson}) => {
   const filteredResults = persons.filter(somePerson => 
     somePerson.name.toLowerCase().includes(inpt.toLowerCase()))   
 
   return (filteredResults.map(person =>
-    <p key={person.id}>{person.name}: {person.number}</p>
+    <p key={person.id}>{person.name}: {person.number} 
+    <button id={person.id} onClick={(event)=>deletePerson(event, person.name)}>delete</button>
+    </p>
   )
   )
   
