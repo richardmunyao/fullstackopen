@@ -7,6 +7,7 @@ const App = () => {
   const [newName, setNewName] = useState('Sherlock Holmes')
   const [newNumber, setNewNumber] = useState('89-23-6423999')
   const [searchInpt, setNewSearchInpt] = useState('')
+  const [statusMsg, setStatusMsg] = useState(null)
 
   //effect hook to update component with persons
   const hook = () => {
@@ -32,9 +33,11 @@ const App = () => {
           changeNumber(alreadyExists, newNumber)
         }
       } else {
-        alert(`${newName} is already added to the phonebook `)
+          setStatusMsg(['error', `${newName} is already added to the phonebook `])
+          setTimeout(()=> {
+            setStatusMsg(null)
+          },5000)
       }
-
 
     } else {
       const newPersonObj = {
@@ -47,6 +50,13 @@ const App = () => {
         .then(returnedPerson => {
           setPersons(persons.concat(returnedPerson))
         })
+        .catch (error => {
+          setStatusMsg(['error', `Error: Could not add ${newName} to phonebook`])
+          setTimeout ( ()=> { setStatusMsg(null)}, 5000 )
+        })
+        //if no error:
+        setStatusMsg(['success', `${newName} was added to phonebook`])
+        setTimeout ( ()=> { setStatusMsg(null)}, 5000 )
       setNewName('')
       setNewNumber('')
     }
@@ -63,6 +73,14 @@ const App = () => {
       .then(returnedPerson => {
         setPersons(persons.map(tmpPersn => tmpPersn.id !== person.id ? tmpPersn : returnedPerson))
       })
+      .catch (error => {       
+        const errorStatus = error.response.status        
+        setStatusMsg(['error',  `Error ${errorStatus}: ${person.name} has already been removed from server `])
+        setTimeout( ()=> { setStatusMsg(null)}, 5000 )
+      })
+      //if no error
+      setStatusMsg(['success', `${person.name}'s' number has been changed`])
+      setTimeout( ()=> { setStatusMsg(null)}, 5000 )
 
   }
 
@@ -79,9 +97,13 @@ const App = () => {
             hook()
           }
         })
-        .catch(error => {
-          alert(`${name} was already deleted from the server`)
+        .catch(error => {          
+          setStatusMsg(['error', `${name} was already deleted from the server`])
+          setTimeout( ()=> { setStatusMsg(null)}, 5000 )
         })
+        // if no error:
+        setStatusMsg(['success', `${name} has been deleted from the phonebook`])
+        setTimeout( ()=> { setStatusMsg(null)}, 5000 )
 
 
     }
@@ -102,6 +124,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={statusMsg} />
 
       <Filter inpt={searchInpt} handler={handleSearchInpt} />
 
@@ -161,6 +184,42 @@ const Persons = ({ persons, inpt, deletePerson }) => {
     </p>
   )
   )
+
+}
+
+const Notification = ({message}) => {
+  
+  //define styles for success and error  
+  const successStyle = {
+    color: 'green',
+    background: 'lightgrey',
+    fontSize: 20,
+    borderStyle: 'solid',
+    borderRadius: 5,
+    padding: 10,
+    marginBottom: 10   
+  }
+
+  const errorStyle = {
+    color: 'red',
+    background: 'lightgrey',
+    fontSize: 20,
+    borderStyle: 'solid',
+    borderRadius: 5,
+    padding: 10,
+    marginBottom: 10   
+  }
+
+  if (message === null) {
+    return null
+  }
+  const type = message[0]
+  if(type === 'success') {
+    return <div style={successStyle}>{message[1]}</div>
+  }
+  else if (type === 'error') {
+    return <div style={errorStyle}>{message[1]}</div>
+  }
 
 }
 
