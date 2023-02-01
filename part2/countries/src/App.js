@@ -46,31 +46,45 @@ return (
 )
 }
 
-const CountriesComponent = ({countries, search, btnHandler, singleOut}) => {
+const SingleCountryComponent = ({selectedCountry}) => {
+  const [weather, setWeather] = useState(null)
+  const capital = selectedCountry.capital[0]
+  const apiKey = process.env.REACT_APP_API_KEY //added .env file to gitignore
+  const baseUrl = `https://api.openweathermap.org/data/2.5/weather?q=${capital}&units=metric&appid=${apiKey}`
+  const weatherHook = () => {
+    axios
+     .get(baseUrl)
+     .then(response => {
+      setWeather(response.data)
+     })
+  }
+  useEffect(weatherHook, [])
+  
+  return (
+    <div>
+      <h1>{selectedCountry.name.common}</h1>
+      <p>Capital: {selectedCountry.capital[0]}</p>
+      <p>Area: {selectedCountry.area}</p>
+      <br/>
+      <h3>Languages:</h3>
+      <ul>
+        {
+          Object.keys(selectedCountry.languages).map(lang =>
+            <li key={lang}>{selectedCountry.languages[lang]}</li>)          
+        }
+      </ul>
+      <img src={selectedCountry.flags.png} alt={selectedCountry.flags.alt}></img>  
+      <WeatherComponent weather={weather} />
+    </div>
+  )
+
+}
+
+const CountriesComponent = ({countries, search, btnHandler}) => {
   
   //filter with search term
   const matchingCountries = countries.filter(cntry =>
     cntry.name.common.toLowerCase().includes(search.toLowerCase()))
-    
-    //function to handle a single country
-    const singleCountry = (selectedCountry) => {  
-      return (
-        <div>
-          <h1>{selectedCountry.name.common}</h1>
-          <p>Capital: {selectedCountry.capital[0]}</p>
-          <p>Area: {selectedCountry.area}</p>
-          <br/>
-          <h3>Languages:</h3>
-          <ul>
-            {
-              Object.keys(selectedCountry.languages).map(lang =>
-                <li key={lang}>{selectedCountry.languages[lang]}</li>)          
-            }
-          </ul>
-          <img src={selectedCountry.flags.png} alt={selectedCountry.flags.alt}></img>
-        </div>
-      )
-    }
 
     if (matchingCountries.length > 10) {
       return (
@@ -82,7 +96,7 @@ const CountriesComponent = ({countries, search, btnHandler, singleOut}) => {
     }
     else if(matchingCountries.length === 1) {
         const solo = matchingCountries[0] 
-        return singleCountry(solo)         
+        return <SingleCountryComponent selectedCountry={solo} />        
     }
     else {
       return (
@@ -92,8 +106,26 @@ const CountriesComponent = ({countries, search, btnHandler, singleOut}) => {
           </p>)
       )
 
-    }     
+    }    
 
 }
+
+const WeatherComponent = ({weather}) => {
+ if (weather === null) {
+  return null
+ }
+ const weatherIcon =  `http://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`
+  return (
+    <>
+    <h3>Weather in {weather.name}</h3>
+      <p>Temperature: {weather.main.temp} degrees celcius</p>
+      <p>{weather.weather[0].description}</p>
+      <img src={weatherIcon} alt={weather.weather[0].description}></img>
+      <p>Wind: {weather.wind.speed} m/s </p>
+    </>
+  )
+
+}
+
 
 export default App;
