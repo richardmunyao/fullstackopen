@@ -2,7 +2,7 @@ import axios from "axios";
 
 // code that handles comms with the backed server
 
-const baseUrl = 'http://localhost:3001/persons/'
+const baseUrl = '/api/persons/'
 
 const create = (newPersonObj) => {
     const request = axios.post(baseUrl, newPersonObj)
