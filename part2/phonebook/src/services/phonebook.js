@@ -2,11 +2,13 @@ import axios from "axios";
 
 // code that handles comms with the backed server
 
-const baseUrl = '/api/persons/'
+const baseUrl = '/api/persons'
 
 const create = (newPersonObj) => {
-    const request = axios.post(baseUrl, newPersonObj)
-    return request.then(response => response.data)
+    const request = axios.post(baseUrl, newPersonObj)  
+    return request.then(response => {        
+        return response.data
+    })
 }
 
 const getAll = () => {

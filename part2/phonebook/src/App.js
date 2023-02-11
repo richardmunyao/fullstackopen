@@ -51,7 +51,9 @@ const App = () => {
           setPersons(persons.concat(returnedPerson))
         })
         .catch (error => {
-          setStatusMsg(['error', `Error: Could not add ${newName} to phonebook`])
+          console.log("errorX",error.response)
+          const errorMsg = error.response.data.error                  
+          setStatusMsg(['error', errorMsg])
           setTimeout ( ()=> { setStatusMsg(null)}, 5000 )
         })
         //if no error:
