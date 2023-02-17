@@ -117,8 +117,89 @@ const cors = require('cors')
 app.use(cors())
 ```
 
+### Testing Backend and Frontend integration
+Before proceeding further, it would be a good idea to test our backend and frontend integration.
+For that, we'll need axios.
+#### Axios
+Axios is a promised-based HTTP client for JavaScript. It has the ability to make HTTP requests from the browser and handle the transformation of request and response data. 
+In the frontend, do:
+
+> npm install axios
+
+Now, I want to fetch some 'notes' data from the backend server and display it on my frontend (:3000) page. I will need:
+1. Axios (to make requests and handle promises)
+2. State and Effect hooks to update my frontend component with the response
+So, my frontend `App.js` now looks like so:
+```
+import {useState, useEffect} from 'react'
+import axios from 'axios'
 
 
+const App = () => {  
+  const [notes, setNotes] = useState([])
+  
+  //effect hook to update component
+  const hook = () => {
+    axios
+    .get('http://localhost:3001/api/notes')
+    .then(response => {      
+      setNotes(response.data)
+    })   
+  }  
+  useEffect(hook, [])    
+
+  return (
+    <div>
+      <h1>Hello world. Good</h1>
+      <ul>
+        {notes.map(note =>         
+          <li key={note.id}>{note.content}</li>)}
+      </ul>      
+    </div>
+  )
+}
+export default App;
+```
+
+Seems like a lot to check integration; I could have just `console.log`ged it, but I wanted to have a visual representation at least.
+
+Anyways, it works, and we can get the data from the backend server.
+
+### Database.
+We shall be using Mongo DB Atlas as our provider. In case I forget, refer to the excellent tutorial at fullstackopen, but it was pretty straight forward.
+Anyway, I do not think we can create more than two clusters at once, so I just created another database to the existing cluster.
+The url string should be modified to include the name of the current DB, like so:
+`mongodb+srv://<yourUsername>:<yourPassword>@cluster0.fbs6utd.mongodb.net/<yourDatabaseName>?retryWrites=true&w=majority`
+
+### Mongoose
+API to connect to MongoDB
+> npm install mongoose
+
+We can test connectivity to DB by creating a new file `mongo.js`
+```
+const mongoose = require('mongoose')
+const url = 'mongodb+srv://fullstack:<password>@cluster0.fbs6utd.mongodb.net/blogNotesApp?retryWrites=true&w=majority'
+mongoose.set('strictQuery', false)
+mongoose.connect(url)
+
+const blogSchema = new mongoose.Schema({
+  content: String,
+  votes: Number,
+})
+
+const Blog = mongoose.model('Blog', blogSchema)
+
+const blog = new Blog({
+  content: 'Learning HTML',
+  votes: 5,
+})
+
+blog.save().then(result => {
+  console.log('blog saved!')
+  mongoose.connection.close()
+})
+```
+Then confirm on your browser in the `collections` tab that the data has been updated.
 
 
 
