@@ -201,6 +201,6 @@ blog.save().then(result => {
 ```
 Then confirm on your browser in the `collections` tab that the data has been updated.
 
-
+The next part shall be deployment, but I shall write that part after I complete the exercise.
 
 
